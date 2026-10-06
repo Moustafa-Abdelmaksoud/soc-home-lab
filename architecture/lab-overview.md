@@ -48,4 +48,13 @@ The Wazuh server uses two network interfaces:
 - NAT interface for Internet access and package updates.
 - Host-Only interface for internal SOC lab communication.
 
+## Data Flow
+
+1. Security activity occurs on the Windows endpoint.
+2. Windows Event Logs and Sysmon generate telemetry.
+3. The Wazuh Agent forwards security events to the Wazuh Server.
+4. Wazuh analyzes the events using detection rules.
+5. Alerts are generated for suspicious activity.
+6. The SOC analyst investigates the alert and documents the incident.
+
 The attacker and victim systems communicate only inside the isolated lab network during attack simulations.
