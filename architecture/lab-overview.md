@@ -48,6 +48,8 @@ The Wazuh server uses two network interfaces:
 - NAT interface for Internet access and package updates.
 - Host-Only interface for internal SOC lab communication.
 
+The attacker and victim systems communicate only inside the isolated lab network during attack simulations.
+
 ## Data Flow
 
 1. Security activity occurs on the Windows endpoint.
@@ -57,4 +59,9 @@ The Wazuh server uses two network interfaces:
 5. Alerts are generated for suspicious activity.
 6. The SOC analyst investigates the alert and documents the incident.
 
-The attacker and victim systems communicate only inside the isolated lab network during attack simulations.
+## Security Considerations
+
+- The attacker VM is isolated from the physical home network.
+- Attack simulations are performed only inside the lab environment.
+- The Host-Only network is used for internal SOC communication.
+- Internet access is provided separately through NAT when required.
