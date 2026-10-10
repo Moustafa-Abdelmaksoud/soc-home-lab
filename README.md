@@ -98,3 +98,76 @@ Endpoint:
 Hostname: SOC-WINDOWS
 IP: 192.168.245.20
 Wazuh Manager: 192.168.245.10
+```
+
+![Windows Agent Acitve](screenshots/02-windows-agent-active.png)
+
+---
+
+## Sysmon Integration
+
+Sysmon was deployed on `SOC-WINDOWS` to provide enhanced Windows telemetry for threat hunting and detection engineering.
+
+The following telemetry was validated:
+
+- Process creation
+- Command-line execution
+- Parent-child process relationships
+- Registry activity
+- File creation events
+- Network-related activity
+
+An initial test was performed using:
+
+```powershell
+net user
+```
+
+Sysmon successfully recorded the activity as:
+
+```text
+Event ID: 1
+Event Type: Process Creation
+Image: C:\Windows\System32\net.exe
+CommandLine: net user
+Computer: SOC-WINDOWS
+```
+
+![Sysmon Process Creation](screenshots/03-sysmon-process-creation.png)
+
+The Wazuh Agent was then configured to collect Sysmon events from:
+
+```text
+Microsoft-Windows-Sysmon/Operational
+```
+
+Using the following configuration:
+
+```xml
+<localfile>
+  <location>Microsoft-Windows-Sysmon/Operational</location>
+  <log_format>eventchannel</log_format>
+</localfile>
+```
+
+After restarting the Wazuh Agent, Sysmon events were successfully forwarded to the Wazuh Manager and became visible in Threat Hunting.
+
+![Sysmon Events in Wazuh](screenshots/04-sysmon-events-in-wazuh.png)
+
+This verified the full telemetry pipeline:
+
+```text
+Windows Activity
+      ↓
+Sysmon
+      ↓
+Windows Event Channel
+      ↓
+Wazuh Agent
+      ↓
+Wazuh Manager
+      ↓
+Threat Hunting / Detection
+```
+
+Wazuh built-in rules also generated alerts from Sysmon telemetry, confirming that the collected endpoint activity could be analyzed for suspicious behavior.
