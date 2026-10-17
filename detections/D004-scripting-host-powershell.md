@@ -74,7 +74,7 @@ A harmless VBScript was executed using both Windows Script Host interpreters.
 
 **Observed:** Wazuh generated two alerts under Rule `100130`, confirming that both parent processes are covered.
 
-![D004 Positive Tests](screenshots/10-d004-positive-tests.png)
+![D004 Positive Tests](/screenshots/10-d004-positive-tests.png)
 
 *Figure 1 — D004 successfully detected PowerShell launched by WScript and CScript.*
 
@@ -88,7 +88,7 @@ A VBScript launched Notepad instead of PowerShell.
 
 **Result: PASS**
 
-![D004 Built-in Rule Negative Test](screenshots/11-d004-wscript-notepad.png)
+![D004 Built-in Rule Negative Test](/screenshots/11-d004-wscript-notepad.png)
 
 *Figure 2 — WScript launching Notepad triggered only the general scripting interpreter detection.*
 
@@ -102,11 +102,11 @@ PowerShell was launched directly from Command Prompt using a harmless test comma
 
 **Result: PASS**
 
-![D004 CMD Negative Test](screenshots/12-d004-cmd-powershell.png)
+![D004 CMD Negative Test](/screenshots/12-d004-cmd-powershell.png)
 
 *Figure 3 — Sysmon confirmed that CMD launched PowerShell.*
 
-![D004 No Custom Alerts](screenshots/13-d004-negative-no-alerts.png)
+![D004 No Custom Alerts](/screenshots/13-d004-negative-no-alerts.png)
 
 *Figure 4 — No D004 alerts during negative testing.*
 
