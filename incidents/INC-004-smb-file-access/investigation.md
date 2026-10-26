@@ -41,23 +41,23 @@ Investigated authenticated SMB access to a temporary Finance share and the colle
 
 **Figure 36 — SMB2 file transfer.** Wireshark shows SMB2 `CREATE` and `READ` requests/responses for synthetic files.
 
-![Figure 36 - Wireshark SMB2 file transfer](screenshots/36-inc004-smb2-transfer.png)
+![Figure 36 - Wireshark SMB2 file transfer](/screenshots/36-inc004-smb2-transfer.png)
 
 **Figure 37 — Initial SIEM visibility.** Wazuh alerts for events `4624` and `5140`, with no initial `5145` alerts.
 
-![Figure 37 - Initial Wazuh SMB alerts](screenshots/37-inc004-initial-wazuh-alerts.png)
+![Figure 37 - Initial Wazuh SMB alerts](/screenshots/37-inc004-initial-wazuh-alerts.png)
 
 **Figure 38 — Collection filtering root cause.** The Windows Wazuh agent Security-channel XPath query excluded Event ID `5145`.
 
-![Figure 38 - Agent exclusion of Event 5145](screenshots/38-inc004-agent-5145-filter.png)
+![Figure 38 - Agent exclusion of Event 5145](/screenshots/38-inc004-agent-5145-filter.png)
 
 **Figure 39 — Collection fix validation.** The new Event `5145` appeared in Wazuh `archives.json` for `README.txt` after the filter was corrected.
 
-![Figure 39 - Event 5145 in Wazuh archives](screenshots/39-inc004-5145-ingestion.png)
+![Figure 39 - Event 5145 in Wazuh archives](/screenshots/39-inc004-5145-ingestion.png)
 
 **Figure 40 — Behavioral alert.** Rule `100171` generated a level-8 alert for multiple document-read requests from one SMB session.
 
-![Figure 40 - Wazuh rule 100171 alert](screenshots/40-inc004-bulk-access-alert.png)
+![Figure 40 - Wazuh rule 100171 alert](/screenshots/40-inc004-bulk-access-alert.png)
 
 The raw SMB packet capture and detailed local forensic artifacts are deliberately excluded from this public report, as SMB captures may contain sensitive authentication/session information. Screenshots should be checked for secrets before publication.
 
