@@ -162,12 +162,6 @@ These checks establish recovery within the inspected scope; they do not prove fo
 
 *Figure 57. Final recovery verification: test accounts, service, share, and lab directories absent; RDP disabled; Wazuh running.*
 
-## Evidence & Publication Notes
-
-Figures **49–57** are embedded above from the repository-level [`screenshots/`](../../screenshots/) directory. Screenshots are illustrative evidence from this controlled lab, and their captions distinguish direct observations from analyst conclusions.
-
-Do not commit registry hive contents, password lists, hardcoded test credentials, unredacted payload source, or PCAP files containing SMB authentication material. Avoid screenshots with exposed passwords or secrets.
-
 ## Final Assessment
 
 **Closed — successful authorized multi-stage simulation with verified core recovery.** Investigation correlated endpoint, authentication, file-integrity, process lineage, registry acquisition, and SMB audit evidence. SYSTEM-level command execution, elevated administrator access, three hive-copy acquisitions, and SMB transfers are supported; interactive SYSTEM shell access and credential-hash extraction were not demonstrated.
