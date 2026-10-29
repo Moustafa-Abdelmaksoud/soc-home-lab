@@ -35,6 +35,16 @@ The lab-only service executable was writable by the low-privilege user, who coul
 
 **Timestamp caveat:** Windows local-event times, Sysmon UTC times, and Wazuh dashboard displays used different clock representations. These observations are correlated by identifiers and sequence, not by assuming a single normalized timezone.
 
+### Reconnaissance and RDP Evidence
+
+![Figure 49 — Full TCP Nmap scan of SOC-WINDOWS showing five open ports.](../../screenshots/49-inc006-full-tcp-scan.png)
+
+*Figure 49. Full TCP Nmap scan of SOC-WINDOWS showing five open ports.*
+
+![Figure 50 — Wazuh correlation of failed logons and successful RDP activity for the test account.](../../screenshots/50-inc006-rdp-detection.png)
+
+*Figure 50. Wazuh correlation of failed logons and successful RDP activity for the test account.*
+
 ## Key Forensic Findings
 
 ### Service Binary Hijacking and Process Correlation
@@ -56,6 +66,20 @@ The `cmd.exe` ParentProcessGuid matched the service ProcessGuid; the two `net.ex
 
 Security `4720` and `4732` confirmed creation of the test account and Administrators membership. The subsequent `hacker` session showed **High Mandatory Level**, an enabled Administrators group, and `SeDebugPrivilege`; this proves elevated administrator access, **not** an interactive SYSTEM shell.
 
+### Service Hijacking and Administrative Persistence Evidence
+
+![Figure 51 — Wazuh FIM rule 550 reports modification of the service executable.](../../screenshots/51-inc006-service-fim.png)
+
+*Figure 51. Wazuh FIM rule 550 reports modification of the service executable.*
+
+![Figure 52 — Sysmon ProcessGuid and ParentProcessGuid lineage confirms SYSTEM-level service-to-command execution.](../../screenshots/52-inc006-system-process-tree.png)
+
+*Figure 52. Sysmon ProcessGuid and ParentProcessGuid lineage confirms SYSTEM-level service-to-command execution.*
+
+![Figure 53 — Wazuh detects creation of the test account and its addition to the local Administrators group.](../../screenshots/53-inc006-account-persistence.png)
+
+*Figure 53. Wazuh detects creation of the test account and its addition to the local Administrators group.*
+
 ### Credential Store Collection and SMB Transfer
 
 `reg.exe save` successfully acquired three registry hive copies under `C:\Temp`. Wazuh produced a process-creation alert describing a SAM hive dump. Equivalent alerts for every hive save were not independently verified.
@@ -69,6 +93,20 @@ Windows Event `5145` captured access to the three filenames through `TempShare` 
 | 09:37:11 | `SYSTEM.save` | `0x120089` |
 
 Event 5145 proves a share access check permitting read-related access, **not** that every byte was transferred. The separate `smbclient get` completion messages support the transfer conclusion. No recovered credentials or secrets are included.
+
+### Credential-Store Acquisition and SMB Evidence
+
+![Figure 54 — Wazuh detects reg.exe saving the SAM registry hive.](../../screenshots/54-inc006-hive-detection.png)
+
+*Figure 54. Wazuh detects reg.exe saving the SAM registry hive.*
+
+![Figure 55 — Kali smbclient reports completion of three registry-hive copy downloads.](../../screenshots/55-inc006-smb-transfer.png)
+
+*Figure 55. Kali smbclient reports completion of three registry-hive copy downloads.*
+
+![Figure 56 — Wazuh share-access alert connects TempShare, the test account, and the Kali source IP; file-level access is corroborated by separate Windows 5145 records.](../../screenshots/56-inc006-smb-share-access.png)
+
+*Figure 56. Wazuh share-access alert connects TempShare, the test account, and the Kali source IP; file-level access is corroborated by separate Windows 5145 records.*
 
 ## Detection Assessment
 
@@ -118,23 +156,17 @@ LabDirExists       False
 
 These checks establish recovery within the inspected scope; they do not prove forensic-grade removal of data from unexamined directories, VM snapshots, or backups. Registry hive copies may expose lab account credentials; appropriate password rotation and snapshot handling remain important.
 
-## Evidence Index
+### Recovery Evidence
 
-Screenshots are maintained in the repository-level `screenshots/` directory. The images below are **planned evidence filenames**, not published links until each image has been separately reviewed and uploaded:
+![Figure 57 — Final recovery verification: test accounts, service, share, and lab directories absent; RDP disabled; Wazuh running.](../../screenshots/57-inc006-recovery-verification.png)
 
-| Figure | Expected filename | Content |
-|---|---|---|
-| 49 | `49-inc006-full-tcp-scan.png` | Nmap all-port scan |
-| 50 | `50-inc006-rdp-detection.png` | Password-guessing and RDP alert |
-| 51 | `51-inc006-service-fim.png` | Wazuh rule 550 for service binary modification |
-| 52 | `52-inc006-system-process-tree.png` | Sysmon process GUID linkage |
-| 53 | `53-inc006-account-persistence.png` | Local account and Administrators membership |
-| 54 | `54-inc006-hive-detection.png` | SAM hive acquisition alert |
-| 55 | `55-inc006-smb-transfer.png` | Successful SMB transfers, credentials redacted |
-| 56 | `56-inc006-smb-share-access.png` | Wazuh SMB share-access alert showing `TempShare`, `hacker`, and source `192.168.245.30`; separate Windows 5145 records support file-level access |
-| 57 | `57-inc006-recovery-verification.png` | Seven final recovery checks |
+*Figure 57. Final recovery verification: test accounts, service, share, and lab directories absent; RDP disabled; Wazuh running.*
 
-**Publication safety:** Do not commit registry hive contents, password lists, hardcoded test credentials, unredacted payload source, or PCAP files containing SMB authentication material. Images showing commands must be reviewed and redacted before publication.
+## Evidence & Publication Notes
+
+Figures **49–57** are embedded above from the repository-level [`screenshots/`](../../screenshots/) directory. Screenshots are illustrative evidence from this controlled lab, and their captions distinguish direct observations from analyst conclusions.
+
+Do not commit registry hive contents, password lists, hardcoded test credentials, unredacted payload source, or PCAP files containing SMB authentication material. Avoid screenshots with exposed passwords or secrets.
 
 ## Final Assessment
 
