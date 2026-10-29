@@ -131,7 +131,7 @@ Screenshots are maintained in the repository-level `screenshots/` directory. The
 | 53 | `53-inc006-account-persistence.png` | Local account and Administrators membership |
 | 54 | `54-inc006-hive-detection.png` | SAM hive acquisition alert |
 | 55 | `55-inc006-smb-transfer.png` | Successful SMB transfers, credentials redacted |
-| 56 | `56-inc006-smb-file-audit.png` | Windows 5145 file-level SMB accesses |
+| 56 | `56-inc006-smb-share-access.png` | Wazuh SMB share-access alert showing `TempShare`, `hacker`, and source `192.168.245.30`; separate Windows 5145 records support file-level access |
 | 57 | `57-inc006-recovery-verification.png` | Seven final recovery checks |
 
 **Publication safety:** Do not commit registry hive contents, password lists, hardcoded test credentials, unredacted payload source, or PCAP files containing SMB authentication material. Images showing commands must be reviewed and redacted before publication.
