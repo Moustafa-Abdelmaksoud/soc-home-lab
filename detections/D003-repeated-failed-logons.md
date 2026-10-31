@@ -86,7 +86,7 @@ The custom rule focuses on repeated authentication failures against the same tar
 
 **Status: PASS**
 
-![D003 Positive Test](screenshots/07-d003-positive-test.png)
+![D003 Positive Test](../screenshots/07-d003-positive-test.png)
 
 *Figure 1 — Custom correlation rule 100120 successfully triggered.*
 
@@ -109,11 +109,11 @@ The custom rule focuses on repeated authentication failures against the same tar
 
 **Status: PASS**
 
-![D003 Negative Events](screenshots/08-d003-negative-events.png)
+![D003 Negative Events](../screenshots/08-d003-negative-events.png)
 
 *Figure 2 — Five failed logon events distributed across two accounts.*
 
-![D003 Negative Result](screenshots/09-d003-negative-result.png)
+![D003 Negative Result](../screenshots/09-d003-negative-result.png)
 
 *Figure 3 — No custom correlation alert generated during the negative test.*
 
