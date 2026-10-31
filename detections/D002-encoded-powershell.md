@@ -213,7 +213,7 @@ This confirms that Rule `100110` does not alert on every PowerShell execution.
 
 The encoded PowerShell executions were successfully detected by custom Wazuh Rule `100110`.
 
-![Encoded PowerShell Detection](../screenshots/06-d002-encoded-powershell-detection.png)
+![Encoded PowerShell Detection](/screenshots/06-d002-encoded-powershell-detection.png)
 
 ---
 
