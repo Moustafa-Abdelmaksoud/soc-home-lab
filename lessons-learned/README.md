@@ -42,7 +42,7 @@ Windows Security events provided authentication and account activity; Sysmon sup
 
 ### Missing and suppressed events need context
 
-Some base rules operate at Level 0 and do not normally appear as standalone alerts in \`wazuh-alerts-*\`. D008 intentionally suppressed individual document-read alerts while retaining the matches needed for correlation.
+Some base rules operate at Level 0 and do not normally appear as standalone alerts in `wazuh-alerts-*`. D008 intentionally suppressed individual document-read alerts while retaining the matches needed for correlation.
 
 **Lesson:** An empty alerts search may reflect filtering, rule level, suppression, retention, or time-window choices—not necessarily an absence of activity.
 
@@ -54,13 +54,13 @@ The eight exercises demonstrated different design approaches:
 
 | Exercise | Key lesson demonstrated |
 |---|---|
-| [D001 — Whoami Execution](/detections/D001-whoami-execution.md) | Process identity and context matter: a renamed \`whoami.exe\` was detected, while tested unrelated discovery commands did not trigger the custom rule. |
-| [D002 — Encoded PowerShell](/detections/D002-encoded-powershell.md) | Match the suspicious command-line behavior (\`-EncodedCommand\` and \`-enc\`) rather than every PowerShell execution. A normal PowerShell command did not trigger the custom rule. |
+| [D001 — Whoami Execution](/detections/D001-whoami-execution.md) | Process identity and context matter: a renamed `whoami.exe` was detected, while tested unrelated discovery commands did not trigger the custom rule. |
+| [D002 — Encoded PowerShell](/detections/D002-encoded-powershell.md) | Match the suspicious command-line behavior (`-EncodedCommand` and `-enc`) rather than every PowerShell execution. A normal PowerShell command did not trigger the custom rule. |
 | [D003 — Repeated Failed Logons](/detections/D003-repeated-failed-logons.md) | Correlation depends on **frequency, timeframe, and grouping key**. Five failures for one user within 120 seconds triggered the tested rule; failures split between users did not. |
 | [D004 — Scripting Host → PowerShell](/detections/D004-scripting-host-powershell.md) | Parent-child process relationships can provide more specific context than either process name alone. Positive and negative process-tree tests were both needed. |
 | [D005 — Suspicious Scheduled Task](/detections/D005-suspicious-scheduled-task.md) | A task configured to use encoded PowerShell warrants different treatment from an ordinary task. **Task creation does not prove execution or persistence**. |
 | [D006 — Registry Run Key Persistence](/detections/D006-registry-persistence.md) | Registry changes can be narrowed by the auto-start location and command content. Sysmon can record a benign or excluded modification without the custom alert firing. |
-| [D007 — PowerShell Network Connection](/detections/D007-powershell-network-connection.md) | Sysmon Event IDs **1 and 3**, joined using \`ProcessGuid\`, can relate a process to a connection. One negative test remained inconclusive because source telemetry was missing. |
+| [D007 — PowerShell Network Connection](/detections/D007-powershell-network-connection.md) | Sysmon Event IDs **1 and 3**, joined using `ProcessGuid`, can relate a process to a connection. One negative test remained inconclusive because source telemetry was missing. |
 | [D008 — SMB Bulk Document Access](/detections/D008-smb-bulk-document-access.md) | A **base rule (100170)** and a **correlation rule (100171)** can detect a burst of distinct document-read requests without alerting on every access check. |
 
 ### Positive testing is necessary but not sufficient
@@ -89,7 +89,7 @@ Investigations required moving from an alert to a defensible conclusion through 
 | Incident | Most important investigative learning |
 |---|---|
 | [INC-001 — Multiple Failed Logins](/incidents/INC-001-failed-logins/investigation.md) | Five failed logons produced a correlation alert, but the inspected window showed **no matching successful logon**. Repeated failures do not automatically mean account compromise. |
-| [INC-002 — Suspicious PowerShell](/incidents/INC-002-powershell/investigation.md) | \`ProcessGuid\`/\`ParentProcessGuid\`, file evidence, and network context reconstructed a multi-process sequence. A timestamp discrepancy had to be documented rather than silently corrected. |
+| [INC-002 — Suspicious PowerShell](/incidents/INC-002-powershell/investigation.md) | `ProcessGuid`/`ParentProcessGuid`, file evidence, and network context reconstructed a multi-process sequence. A timestamp discrepancy had to be documented rather than silently corrected. |
 | [INC-003 — Unauthorized Admin Account](/incidents/INC-003-admin-account/investigation.md) | Creating an account and adding it to Administrators are distinct events. The account represented privilege risk even though matching account usage was not observed in the inspected authentication window. |
 | [INC-004 — Suspicious SMB File Access](/incidents/INC-004-smb-file-access/investigation.md) | Local Windows logs, SMB traffic, Wazuh archives, and custom rule results exposed and helped close a **telemetry/detection visibility gap**. |
 | [INC-005 — Windows Service Persistence](/incidents/INC-005-service-persistence/investigation.md) | Event **7045** established service installation, not successful persistence. Automatic startup initially timed out (System **7009/7000**); delayed automatic start was subsequently validated after reboot. |
@@ -127,7 +127,7 @@ Screenshots, alert records, timelines, and relevant hashes or metadata support a
 
 ## 6. SOC Monitoring and Dashboard Design
 
-Two saved dashboards were created from the \`wazuh-alerts-*\` data view:
+Two saved dashboards were created from the `wazuh-alerts-*` data view:
 
 - [SOC Security Overview](/dashboards/README.md#1-soc-security-overview): alert totals, high-severity counts, alert volume over time, rule frequency, severity distribution, and ATT&CK tactics.
 - [Authentication & Endpoint Activity](/dashboards/README.md#2-authentication--endpoint-activity): failed logons, RDP rule alerts, account/group changes, suspicious PowerShell detections, new services, and SMB bulk-access alerts.
@@ -142,7 +142,7 @@ Two saved dashboards were created from the \`wazuh-alerts-*\` data view:
 
 ### A useful KPI requires a precise definition
 
-- \`rule.level >= 12\` counts high-severity **alerts**, not confirmed incidents.
+- `rule.level >= 12` counts high-severity **alerts**, not confirmed incidents.
 - Event **4625** counts indexed Windows failed logons, not exclusively RDP attempts.
 - Rule **100120** counts correlation alerts, not the number of password guesses.
 - Events **4720** and **4732** count account-creation and local-group-addition events; they do not by themselves establish malicious account usage or Administrators-only membership.
@@ -154,23 +154,9 @@ The [dashboard documentation](/dashboards/README.md) records the DQL filters and
 
 **Lesson:** Save the correct filters with each visualization, use meaningful titles, group related KPIs, and state the time range and source index. A dashboard is useful only when the displayed number means what its label says.
 
-## 7. Documentation and Evidence-Based Reporting
+## 7. The End-to-End Workflow I Can Now Demonstrate
 
-The project produced **eight detection reports, six incident investigations, two saved dashboards, 59 screenshot files, a MITRE mapping, and structured lessons learned**.
-
-The most useful documentation habits were:
-- Use consistent rule IDs, event IDs, filenames, figures, and links.
-- Show what was tested, what was observed, and which conclusions remain unverified.
-- Include positive and negative evidence instead of screenshots of successful alerts only.
-- Add short captions that explain what each screenshot proves.
-- Map ATT&CK techniques to **observed behavior or detection intent**, not as a claim of comprehensive coverage.
-- Check Markdown paths and image references before presenting the portfolio.
-
-**Evidence:** [Detection Reports](/detections/) · [Incident Reports](/incidents/) · [MITRE ATT&CK Mapping](/mitre-attack/README.md) · [SOC Dashboards](/dashboards/README.md).
-
-## 8. The End-to-End Workflow I Can Now Demonstrate
-
-\`\`\`text
+```text
 Design an isolated environment
              |
              v
@@ -196,11 +182,11 @@ Monitor patterns using saved SOC dashboards
              |
              v
 Document findings, ATT&CK mappings, and lessons
-\`\`\`
+```
 
 This end-to-end workflow is the project's central outcome: progressing from **building the SIEM environment** to **explaining and validating security findings**.
 
-## 9. Opportunities for Future Improvement
+## 8. Opportunities for Future Improvement
 
 These are **future possibilities, not completed features**:
 
