@@ -108,7 +108,7 @@ whoami.exe
 
 Rule `100100` still triggered successfully because the detection uses `OriginalFileName` rather than relying only on the executable path.
 
-![Whoami Renamed Binary Detection](../screenshots/05-d001-whoami-renamed-detection.png)
+![Whoami Renamed Binary Detection](/screenshots/05-d001-whoami-renamed-detection.png)
 
 ## Investigation Context
 
