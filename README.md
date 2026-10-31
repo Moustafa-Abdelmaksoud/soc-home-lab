@@ -1,173 +1,141 @@
 # SOC Home Lab
 
-A practical Security Operations Center home lab focused on security monitoring, Windows telemetry, detection engineering, threat hunting, and incident response using Wazuh, Sysmon, Windows 11, and Kali Linux.
+**Security monitoring, detection engineering, incident investigation, and operational dashboards with Wazuh, Sysmon, Windows 11, and Kali Linux.**
 
----
+This repository documents an isolated, authorized Security Operations Center (SOC) home lab. It demonstrates a complete workflow: collect Windows telemetry, develop and test Wazuh detections, investigate controlled adversary simulations, validate recovery, and visualize results using saved SOC dashboards.
 
-## Project Objectives
+## Project at a Glance
 
-The goal of this project is to build a realistic SOC environment and gain hands-on experience with:
+| Area | Documented result |
+|---|---|
+| Infrastructure | VirtualBox lab, Wazuh all-in-one, Windows 11 agent, Sysmon integration |
+| Detection engineering | **8 exercises (D001–D008)** with tests, rule logic, and limitations |
+| Incident response | **6 investigations (INC-001–INC-006)** with forensic evidence and cleanup |
+| Monitoring | **2 custom Wazuh dashboards, 13 saved panels** |
+| Evidence | **59 screenshots** illustrating telemetry, detection, investigations, and monitoring |
+| ATT&CK | Tactics and techniques mapped to observed lab behaviors |
 
-- SIEM deployment and administration
-- Windows security monitoring
-- Sysmon telemetry
-- Log collection and analysis
-- Threat hunting
-- Detection engineering
-- Alert investigation
-- Incident response
-- MITRE ATT&CK mapping
+## Explore the Project
 
----
+- [Lab Architecture](/architecture/lab-overview.md)
+- [Detection Engineering](/detections/)
+- [Incident Investigations](/incidents/)
+- [SOC Monitoring Dashboards](/dashboards/README.md)
+- [MITRE ATT&CK Mapping](/mitre-attack/README.md)
+- [Lessons Learned](/lessons-learned/README.md)
 
 ## Lab Architecture
 
-The environment is built using VirtualBox and contains:
+The lab runs on Oracle VirtualBox. A **Host-Only network** isolates the test systems; NAT is used separately for internet connectivity when needed.
 
-| System | Role | IP Address |
+| System | Role | Lab IP |
 |---|---|---|
-| Windows Host | Lab Management | 192.168.245.1 |
-| Wazuh Server | SIEM / XDR | 192.168.245.10 |
-| Windows 11 Endpoint | Monitored Endpoint | 192.168.245.20 |
-| Kali Linux | Adversary Simulation | 192.168.245.30 |
-
-The lab uses a dedicated Host-Only network for internal security testing while NAT is used separately for Internet access.
-
-Full architecture documentation:
-
-[View Lab Architecture](architecture/lab-overview.md)
-
----
-
-## Technologies
-
-- Wazuh SIEM / XDR
-- Windows 11 Pro
-- Sysmon
-- Ubuntu Server
-- VirtualBox
-- Kali Linux
-- Windows Event Logs
-- MITRE ATT&CK
-
----
-
-## Current Progress
-
-- [x] VirtualBox lab network configured
-- [x] Ubuntu Server deployed
-- [x] Wazuh All-in-One server installed
-- [x] Wazuh Dashboard configured
-- [x] Windows 11 endpoint deployed
-- [x] Static lab IP addresses configured
-- [x] Wazuh Agent installed
-- [x] Windows endpoint connected to Wazuh
-- [x] Sysmon installed
-- [x] Sysmon Process Creation telemetry verified
-- [x] Sysmon logs forwarded to Wazuh
-- [x] Sysmon Event ID 1 visible in Threat Hunting
-- [ ] Custom detection rules
-- [ ] Authentication attack detections
-- [ ] PowerShell detection
-- [ ] Persistence detection
-- [ ] Incident investigations
-- [ ] MITRE ATT&CK mapping
-- [ ] Kali Linux adversary simulation
-
----
-
-## Wazuh Deployment
-
-The Wazuh server was deployed on Ubuntu Server and configured as an all-in-one installation including:
-
-- Wazuh Manager
-- Wazuh Indexer
-- Wazuh Dashboard
-
-![Wazuh Dashboard](screenshots/01-wazuh-dashboard-running.png)
-
----
-
-## Windows Endpoint Monitoring
-
-A Windows 11 Pro endpoint named `SOC-WINDOWS` was deployed and connected to the Wazuh Manager using the Wazuh Agent.
-
-Endpoint:
+| Windows host | Virtualization management | `192.168.245.1` |
+| Wazuh / Ubuntu Server | SIEM manager, indexer, dashboard | `192.168.245.10` |
+| `SOC-WINDOWS` / Windows 11 Pro | Monitored endpoint (Wazuh agent `001`) | `192.168.245.20` |
+| Kali Linux | Authorized test activity | `192.168.245.30` |
 
 ```text
-Hostname: SOC-WINDOWS
-IP: 192.168.245.20
-Wazuh Manager: 192.168.245.10
+Kali test activity --> Windows 11 --> Security/System logs + Sysmon
+                          |                      |
+                          +------ Wazuh Agent ---+
+                                      |
+                                      v
+                           Wazuh Manager/Indexer
+                                      |
+                                      v
+                        Alerts, investigations, dashboards
 ```
 
-![Windows Agent Acitve](screenshots/02-windows-agent-active.png)
+[Detailed architecture](/architecture/lab-overview.md)
 
----
+## Telemetry and Validation
 
-## Sysmon Integration
+Collected evidence includes Windows Security and System events, Sysmon process telemetry, selected SMB audit events, and correlated Wazuh alerts. Notable event IDs include **4625** (failed logon), **4720** (account creation), **4732** (local group addition), **5145** (file-share access check), and **7045** (new Windows service).
 
-Sysmon was deployed on `SOC-WINDOWS` to provide enhanced Windows telemetry for threat hunting and detection engineering.
+Initial integration was verified by running `net user` on the Windows endpoint, observing Sysmon **Event ID 1**, and confirming that matching events reached Wazuh.
 
-The following telemetry was validated:
+<details>
+<summary>Initial telemetry verification screenshots</summary>
 
-- Process creation
-- Command-line execution
-- Parent-child process relationships
-- Registry activity
-- File creation events
-- Network-related activity
+![Wazuh Dashboard running](/screenshots/01-wazuh-dashboard-running.png)
 
-An initial test was performed using:
+*Wazuh manager and dashboard running.*
 
-```powershell
-net user
-```
+![Windows Agent active](/screenshots/02-windows-agent-active.png)
 
-Sysmon successfully recorded the activity as:
+*Windows endpoint successfully connected to Wazuh.*
 
-```text
-Event ID: 1
-Event Type: Process Creation
-Image: C:\Windows\System32\net.exe
-CommandLine: net user
-Computer: SOC-WINDOWS
-```
+![Sysmon process creation](/screenshots/03-sysmon-process-creation.png)
 
-![Sysmon Process Creation](screenshots/03-sysmon-process-creation.png)
+*Sysmon Event ID 1 records the test command.*
 
-The Wazuh Agent was then configured to collect Sysmon events from:
+![Sysmon events in Wazuh](/screenshots/04-sysmon-events-in-wazuh.png)
 
-```text
-Microsoft-Windows-Sysmon/Operational
-```
+*Sysmon process telemetry appears in Wazuh.*
 
-Using the following configuration:
+</details>
 
-```xml
-<localfile>
-  <location>Microsoft-Windows-Sysmon/Operational</location>
-  <log_format>eventchannel</log_format>
-</localfile>
-```
+## Detection Engineering
 
-After restarting the Wazuh Agent, Sysmon events were successfully forwarded to the Wazuh Manager and became visible in Threat Hunting.
+Eight documented exercises include the rule design, relevant telemetry, positive/negative testing where performed, and practical limitations.
 
-![Sysmon Events in Wazuh](screenshots/04-sysmon-events-in-wazuh.png)
+| ID | Focus | Documentation |
+|---|---|---|
+| D001 | `whoami` execution and user discovery | [Report](/detections/D001-whoami-execution.md) |
+| D002 | Encoded PowerShell command execution | [Report](/detections/D002-encoded-powershell.md) |
+| D003 | Repeated failed Windows logons | [Report](/detections/D003-repeated-failed-logons.md) |
+| D004 | Suspicious scripting host–PowerShell process relationship | [Report](/detections/D004-scripting-host-powershell.md) |
+| D005 | Suspicious scheduled task creation | [Report](/detections/D005-suspicious-scheduled-task.md) |
+| D006 | Registry Run key persistence | [Report](/detections/D006-registry-persistence.md) |
+| D007 | PowerShell network connection behavior | [Report](/detections/D007-powershell-network-connection.md) |
+| D008 | SMB bulk document access (Wazuh rules `100170` / `100171`) | [Report](/detections/D008-smb-bulk-document-access.md) |
 
-This verified the full telemetry pipeline:
+**D008 example:** After collecting Windows Event **5145**, the lab validated a rule correlation for repeated document access requests. A controlled two-file test did not trigger the bulk rule; a ten-file test produced a Level 8 alert from `100171`. An access-check event alone does **not** establish a completed file transfer.
 
-```text
-Windows Activity
-      ↓
-Sysmon
-      ↓
-Windows Event Channel
-      ↓
-Wazuh Agent
-      ↓
-Wazuh Manager
-      ↓
-Threat Hunting / Detection
-```
+## Incident Investigations
 
-Wazuh built-in rules also generated alerts from Sysmon telemetry, confirming that the collected endpoint activity could be analyzed for suspicious behavior.
+Six investigations reconstruct the activity, explain the observed evidence, and document remediation and verification.
+
+| Incident | Scenario | Report |
+|---|---|---|
+| INC-001 | Multiple failed logins | [Investigation](/incidents/INC-001-failed-logins/investigation.md) |
+| INC-002 | Suspicious PowerShell execution and process correlation | [Investigation](/incidents/INC-002-powershell/investigation.md) |
+| INC-003 | Local administrator account creation and removal | [Investigation](/incidents/INC-003-admin-account/investigation.md) |
+| INC-004 | SMB file access and telemetry coverage gap | [Investigation](/incidents/INC-004-smb-file-access/investigation.md) |
+| INC-005 | Windows service persistence | [Investigation](/incidents/INC-005-service-persistence/investigation.md) |
+| INC-006 | Multi-stage intrusion: RDP, service abuse, account changes, registry hive copies, SMB | [Investigation](/incidents/INC-006-multi-stage-intrusion/investigation.md) |
+
+**Featured investigation — [INC-006](/incidents/INC-006-multi-stage-intrusion/investigation.md):** Reconstructed the path from full-port reconnaissance and RDP entry to SYSTEM-context service execution, administrative account changes, credential-store copy acquisition, SMB transfers, and recovery. This demonstrated **registry hive acquisition**, not credential-hash extraction or an interactive SYSTEM shell.
+
+## SOC Monitoring Dashboards
+
+Two saved dashboards use the `wazuh-alerts-*` data view to turn indexed alerts into practical monitoring views.
+
+| Dashboard | Panels |
+|---|---|
+| **SOC Security Overview** | Total and high-severity alerts, volume over time, most frequent rules, severity levels, MITRE ATT&CK tactics |
+| **Authentication & Endpoint Activity** | Failed logons, RDP brute-force alerts, account creation, group changes, PowerShell detections, new services, SMB bulk-access alerts |
+
+![SOC Security Overview](/screenshots/58-soc-security-overview.png)
+
+*SOC Security Overview — saved Wazuh monitoring dashboard.*
+
+[Dashboard 1 and 2: documentation, DQL filters, screenshots, and interpretation](/dashboards/README.md)
+
+Dashboard counts depend on the selected time range and retention. An alert count is not a count of distinct incidents, and the absence of an indexed alert is not proof that an event did not occur.
+
+## Skills Demonstrated
+
+- Windows security auditing and Sysmon-based process correlation
+- Wazuh deployment, agent configuration, alert analysis, and rule validation
+- Positive/negative detection testing and documenting coverage gaps
+- Evidence-based SOC investigation, timeline reconstruction, and recovery verification
+- MITRE ATT&CK technique mapping
+- Building Wazuh security monitoring visualizations
+
+## Scope and Safety
+
+All attack simulations were authorized and performed inside an isolated lab with test accounts and synthetic data. The public-facing reports focus on detection and defensive analysis; registry hive exports, account secrets, password lists, and sensitive payloads are not part of the published evidence.
+
+**Next:** [MITRE ATT&CK mapping](/mitre-attack/README.md) · [Lessons learned](/lessons-learned/README.md)

@@ -37,11 +37,11 @@ The lab-only service executable was writable by the low-privilege user, who coul
 
 ### Reconnaissance and RDP Evidence
 
-![Figure 49 — Full TCP Nmap scan of SOC-WINDOWS showing five open ports.](../../screenshots/49-inc006-full-tcp-scan.png)
+![Figure 49 — Full TCP Nmap scan of SOC-WINDOWS showing five open ports.](/screenshots/49-inc006-full-tcp-scan.png)
 
 *Figure 49. Full TCP Nmap scan of SOC-WINDOWS showing five open ports.*
 
-![Figure 50 — Wazuh correlation of failed logons and successful RDP activity for the test account.](../../screenshots/50-inc006-rdp-detection.png)
+![Figure 50 — Wazuh correlation of failed logons and successful RDP activity for the test account.](/screenshots/50-inc006-rdp-detection.png)
 
 *Figure 50. Wazuh correlation of failed logons and successful RDP activity for the test account.*
 
@@ -68,15 +68,15 @@ Security `4720` and `4732` confirmed creation of the test account and Administra
 
 ### Service Hijacking and Administrative Persistence Evidence
 
-![Figure 51 — Wazuh FIM rule 550 reports modification of the service executable.](../../screenshots/51-inc006-service-fim.png)
+![Figure 51 — Wazuh FIM rule 550 reports modification of the service executable.](/screenshots/51-inc006-service-fim.png)
 
 *Figure 51. Wazuh FIM rule 550 reports modification of the service executable.*
 
-![Figure 52 — Sysmon ProcessGuid and ParentProcessGuid lineage confirms SYSTEM-level service-to-command execution.](../../screenshots/52-inc006-system-process-tree.png)
+![Figure 52 — Sysmon ProcessGuid and ParentProcessGuid lineage confirms SYSTEM-level service-to-command execution.](/screenshots/52-inc006-system-process-tree.png)
 
 *Figure 52. Sysmon ProcessGuid and ParentProcessGuid lineage confirms SYSTEM-level service-to-command execution.*
 
-![Figure 53 — Wazuh detects creation of the test account and its addition to the local Administrators group.](../../screenshots/53-inc006-account-persistence.png)
+![Figure 53 — Wazuh detects creation of the test account and its addition to the local Administrators group.](/screenshots/53-inc006-account-persistence.png)
 
 *Figure 53. Wazuh detects creation of the test account and its addition to the local Administrators group.*
 
@@ -96,15 +96,15 @@ Event 5145 proves a share access check permitting read-related access, **not** t
 
 ### Credential-Store Acquisition and SMB Evidence
 
-![Figure 54 — Wazuh detects reg.exe saving the SAM registry hive.](../../screenshots/54-inc006-hive-detection.png)
+![Figure 54 — Wazuh detects reg.exe saving the SAM registry hive.](/screenshots/54-inc006-hive-detection.png)
 
 *Figure 54. Wazuh detects reg.exe saving the SAM registry hive.*
 
-![Figure 55 — Kali smbclient reports completion of three registry-hive copy downloads.](../../screenshots/55-inc006-smb-transfer.png)
+![Figure 55 — Kali smbclient reports completion of three registry-hive copy downloads.](/screenshots/55-inc006-smb-transfer.png)
 
 *Figure 55. Kali smbclient reports completion of three registry-hive copy downloads.*
 
-![Figure 56 — Wazuh share-access alert connects TempShare, the test account, and the Kali source IP; file-level access is corroborated by separate Windows 5145 records.](../../screenshots/56-inc006-smb-share-access.png)
+![Figure 56 — Wazuh share-access alert connects TempShare, the test account, and the Kali source IP; file-level access is corroborated by separate Windows 5145 records.](/screenshots/56-inc006-smb-share-access.png)
 
 *Figure 56. Wazuh share-access alert connects TempShare, the test account, and the Kali source IP; file-level access is corroborated by separate Windows 5145 records.*
 
@@ -158,7 +158,7 @@ These checks establish recovery within the inspected scope; they do not prove fo
 
 ### Recovery Evidence
 
-![Figure 57 — Final recovery verification: test accounts, service, share, and lab directories absent; RDP disabled; Wazuh running.](../../screenshots/57-inc006-recovery-verification.png)
+![Figure 57 — Final recovery verification: test accounts, service, share, and lab directories absent; RDP disabled; Wazuh running.](/screenshots/57-inc006-recovery-verification.png)
 
 *Figure 57. Final recovery verification: test accounts, service, share, and lab directories absent; RDP disabled; Wazuh running.*
 
