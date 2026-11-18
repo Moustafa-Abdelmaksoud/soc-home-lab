@@ -144,13 +144,13 @@ Observed FortiGate events occurred at:
 
 The three events triggered Wazuh rule `100181` at level 8.
 
-![Figure 60 — FortiGate DNS deny test events](/screenshots/60-d009-fortigate-positive-negative-dns-denies.png)
-
-*Figure 60. FortiGate Forward Traffic shows the three-event positive test at 08:48:25–08:48:31 and the later two-event negative test at 08:54:53–08:54:57.*
-
 ![Figure 61 — Wazuh repeated blocked DNS alert](/screenshots/61-d009-wazuh-repeated-dns-alert.png)
 
 *Figure 61. Wazuh rule 100181 generated one Level 8 alert for repeated blocked DNS traffic from 192.168.245.30 to 1.1.1.1 over UDP/53.*
+
+![Figure 60 — FortiGate DNS deny test events](/screenshots/60-d009-fortigate-positive-negative-dns-denies.png)
+
+*Figure 60. FortiGate Forward Traffic shows the three-event positive test at 08:48:25–08:48:31 and the later two-event negative test at 08:54:53–08:54:57.*
 
 **Status: PASS**
 
