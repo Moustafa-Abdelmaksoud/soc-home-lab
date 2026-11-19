@@ -1,6 +1,6 @@
 # SOC Home Lab
 
-**Security monitoring, detection engineering, incident investigation, firewall telemetry, and operational dashboards with Wazuh, FortiGate, Sysmon, Windows 11, and Kali Linux.**
+**Security monitoring, detection engineering, incident investigation, and operational dashboards with Wazuh, Sysmon, Windows 11, and Kali Linux.**
 
 This repository documents an isolated, authorized Security Operations Center (SOC) home lab. It demonstrates a complete workflow: collect Windows telemetry, develop and test Wazuh detections, investigate controlled adversary simulations, validate recovery, and visualize results using saved SOC dashboards.
 
@@ -9,10 +9,10 @@ This repository documents an isolated, authorized Security Operations Center (SO
 | Area | Documented result |
 |---|---|
 | Infrastructure | VirtualBox lab, Wazuh all-in-one, Windows 11 agent, Sysmon integration |
-| Detection engineering | **9 exercises (D001–D009)** with tests, rule logic, and limitations |
+| Detection engineering | **8 exercises (D001–D008)** with tests, rule logic, and limitations |
 | Incident response | **6 investigations (INC-001–INC-006)** with forensic evidence and cleanup |
 | Monitoring | **2 custom Wazuh dashboards, 13 saved panels** |
-| Evidence | **61 screenshots** illustrating telemetry, detection, investigations, and monitoring |
+| Evidence | **59 screenshots** illustrating telemetry, detection, investigations, and monitoring |
 | ATT&CK | Tactics and techniques mapped to observed lab behaviors |
 
 ## Explore the Project
@@ -26,7 +26,7 @@ This repository documents an isolated, authorized Security Operations Center (SO
 
 ## Lab Architecture
 
-The lab uses isolated virtual networks for controlled testing. A **Host-Only network** connects the core SOC systems, while NAT is used separately for internet connectivity when needed. A FortiGate VM provides firewall enforcement and forwards selected traffic logs to Wazuh through Syslog.
+The lab runs on Oracle VirtualBox. A **Host-Only network** isolates the test systems; NAT is used separately for internet connectivity when needed.
 
 | System | Role | Lab IP |
 |---|---|---|
@@ -34,7 +34,6 @@ The lab uses isolated virtual networks for controlled testing. A **Host-Only net
 | Wazuh / Ubuntu Server | SIEM manager, indexer, dashboard | `192.168.245.10` |
 | `SOC-WINDOWS` / Windows 11 Pro | Monitored endpoint (Wazuh agent `001`) | `192.168.245.20` |
 | Kali Linux | Authorized test activity | `192.168.245.30` |
-| FortiGate | Firewall, traffic enforcement, Syslog source | `192.168.245.40` (lab interface) |
 
 ```text
 Kali test activity --> Windows 11 --> Security/System logs + Sysmon
@@ -52,7 +51,7 @@ Kali test activity --> Windows 11 --> Security/System logs + Sysmon
 
 ## Telemetry and Validation
 
-Collected evidence includes Windows Security and System events, Sysmon process telemetry, selected SMB audit events, FortiGate forward-traffic Syslog, and correlated Wazuh alerts. Notable event IDs include **4625** (failed logon), **4720** (account creation), **4732** (local group addition), **5145** (file-share access check), and **7045** (new Windows service).
+Collected evidence includes Windows Security and System events, Sysmon process telemetry, selected SMB audit events, and correlated Wazuh alerts. Notable event IDs include **4625** (failed logon), **4720** (account creation), **4732** (local group addition), **5145** (file-share access check), and **7045** (new Windows service).
 
 Initial integration was verified by running `net user` on the Windows endpoint, observing Sysmon **Event ID 1**, and confirming that matching events reached Wazuh.
 
@@ -79,7 +78,7 @@ Initial integration was verified by running `net user` on the Windows endpoint, 
 
 ## Detection Engineering
 
-Nine documented exercises include the rule design, relevant telemetry, positive/negative testing where performed, and practical limitations.
+Eight documented exercises include the rule design, relevant telemetry, positive/negative testing where performed, and practical limitations.
 
 | ID | Focus | Documentation |
 |---|---|---|
@@ -91,11 +90,8 @@ Nine documented exercises include the rule design, relevant telemetry, positive/
 | D006 | Registry Run key persistence | [Report](/detections/D006-registry-persistence.md) |
 | D007 | PowerShell network connection behavior | [Report](/detections/D007-powershell-network-connection.md) |
 | D008 | SMB bulk document access (Wazuh rules `100170` / `100171`) | [Report](/detections/D008-smb-bulk-document-access.md) |
-| D009 | Repeated blocked DNS traffic from FortiGate (Wazuh rules `100180` / `100181`) | [Report](/detections/D009-repeated-blocked-dns.md) |
 
 **D008 example:** After collecting Windows Event **5145**, the lab validated a rule correlation for repeated document access requests. A controlled two-file test did not trigger the bulk rule; a ten-file test produced a Level 8 alert from `100171`. An access-check event alone does **not** establish a completed file transfer.
-
-**D009 example:** FortiGate forward-traffic logs were collected through Syslog and parsed by Wazuh's built-in FortiGate decoder. Three blocked DNS/UDP attempts from the same source within 60 seconds produced one Level 8 alert from `100181`; a two-event test and a split-source test did not. Repeated firewall denies are a triage signal and do **not** by themselves prove DNS tunneling or malware.
 
 ## Incident Investigations
 
@@ -132,7 +128,6 @@ Dashboard counts depend on the selected time range and retention. An alert count
 ## Skills Demonstrated
 
 - Windows security auditing and Sysmon-based process correlation
-- FortiGate firewall telemetry collection, Syslog integration, and network-event correlation
 - Wazuh deployment, agent configuration, alert analysis, and rule validation
 - Positive/negative detection testing and documenting coverage gaps
 - Evidence-based SOC investigation, timeline reconstruction, and recovery verification
