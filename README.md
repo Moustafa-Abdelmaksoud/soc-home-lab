@@ -12,7 +12,7 @@ This repository documents an isolated, authorized Security Operations Center (SO
 | Detection engineering | **9 exercises (D001–D009)** with tests, rule logic, and limitations |
 | Incident response | **6 investigations (INC-001–INC-006)** with forensic evidence and cleanup |
 | Monitoring | **2 custom Wazuh dashboards, 13 saved panels** |
-| Evidence | **59 screenshots** illustrating telemetry, detection, investigations, and monitoring |
+| Evidence | **61 screenshots** illustrating telemetry, detection, investigations, and monitoring |
 | ATT&CK | Tactics and techniques mapped to observed lab behaviors |
 
 ## Explore the Project
