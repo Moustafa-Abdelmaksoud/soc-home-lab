@@ -126,6 +126,10 @@ The rule was tuned to **level 1 + `no_log`**, with `100182` performing behaviora
 
 This preserves the event state needed for correlation while reducing alert noise.
 
+![Figure 60 — Pre-tuning alert noise](/screenshots/60-d009-pre-tuning-alert-noise.png)
+
+*Figure 60. Before correlation tuning, three blocked packets generated three separate rule `100180` alerts, demonstrating unnecessary packet-level alert noise.*
+
 ## Validation Results
 
 | Test | Procedure / observation | Result |
@@ -153,6 +157,10 @@ Frequency:    3
 ```
 
 The contributing FortiGate traffic events showed `srcintf=port2`, `dstintf=port3`, `policyid=2`, and `action=deny`.
+
+![Figure 61 — Live correlated D009 alert](/screenshots/61-d009-live-correlated-alert.png)
+
+*Figure 61. After tuning, three blocked attempts from the same untrusted source generated one Level 8 correlated `100182` alert. The indexed event shows the source and destination IPs, FortiGate interfaces, denied action, service, and policy ID.*
 
 ## Important Validation Boundary
 
