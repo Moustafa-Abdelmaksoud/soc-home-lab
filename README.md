@@ -1,6 +1,6 @@
 # SOC Home Lab
 
-**Security monitoring, detection engineering, incident investigation, and operational dashboards with Wazuh, Sysmon, Windows 11, and Kali Linux.**
+**Security monitoring, detection engineering, network segmentation, firewall telemetry, incident investigation, and operational dashboards with Wazuh, FortiGate, Sysmon, Windows 11, and Kali Linux.**
 
 This repository documents an isolated, authorized Security Operations Center (SOC) home lab. It demonstrates a complete workflow: collect Windows telemetry, develop and test Wazuh detections, investigate controlled adversary simulations, validate recovery, and visualize results using saved SOC dashboards.
 
@@ -8,8 +8,8 @@ This repository documents an isolated, authorized Security Operations Center (SO
 
 | Area | Documented result |
 |---|---|
-| Infrastructure | VirtualBox lab, Wazuh all-in-one, Windows 11 agent, Sysmon integration |
-| Detection engineering | **8 exercises (D001–D008)** with tests, rule logic, and limitations |
+| Infrastructure | Mixed VMware/VirtualBox lab with FortiGate segmentation, Wazuh all-in-one, Windows 11 agent, and Sysmon |
+| Detection engineering | **9 exercises (D001–D009)** with tests, rule logic, and limitations |
 | Incident response | **6 investigations (INC-001–INC-006)** with forensic evidence and cleanup |
 | Monitoring | **2 custom Wazuh dashboards, 13 saved panels** |
 | Evidence | **59 screenshots** illustrating telemetry, detection, investigations, and monitoring |
@@ -26,26 +26,37 @@ This repository documents an isolated, authorized Security Operations Center (SO
 
 ## Lab Architecture
 
-The lab runs on Oracle VirtualBox. A **Host-Only network** isolates the test systems; NAT is used separately for internet connectivity when needed.
+The current architecture uses **VMware for FortiGate** and **VirtualBox for Wazuh, Windows, and Kali**. Two VirtualBox Host-Only networks are bridged into VMware so FortiGate provides the routed boundary between the attack zone and the internal SOC network.
 
 | System | Role | Lab IP |
 |---|---|---|
-| Windows host | Virtualization management | `192.168.245.1` |
 | Wazuh / Ubuntu Server | SIEM manager, indexer, dashboard | `192.168.245.10` |
 | `SOC-WINDOWS` / Windows 11 Pro | Monitored endpoint (Wazuh agent `001`) | `192.168.245.20` |
-| Kali Linux | Authorized test activity | `192.168.245.30` |
+| FortiGate `port3` | INTERNAL / SOC gateway | `192.168.245.40` |
+| Kali Linux | Authorized adversary simulation | `192.168.246.30` |
+| FortiGate `port2` | ATTACK-ZONE gateway | `192.168.246.40` |
+| FortiGate `port1` | WAN / VMware NAT | `192.168.248.129` |
 
 ```text
-Kali test activity --> Windows 11 --> Security/System logs + Sysmon
-                          |                      |
-                          +------ Wazuh Agent ---+
-                                      |
-                                      v
-                           Wazuh Manager/Indexer
-                                      |
-                                      v
-                        Alerts, investigations, dashboards
+Kali 192.168.246.30
+        |
+        v
+FortiGate port2 192.168.246.40
+        |
+        | routed policy enforcement + traffic logging
+        v
+FortiGate port3 192.168.245.40
+        |
+        +--------------------+
+        |                    |
+SOC-WINDOWS              Wazuh
+192.168.245.20       192.168.245.10
+        |                    ^
+        | Wazuh Agent        | FortiGate syslog
+        +--------------------+
 ```
+
+Kali retains a separate NAT interface for Internet access, so FortiGate currently enforces **attack-zone-to-internal-SOC traffic**, not all Kali Internet traffic.
 
 [Detailed architecture](/architecture/lab-overview.md)
 
@@ -78,7 +89,7 @@ Initial integration was verified by running `net user` on the Windows endpoint, 
 
 ## Detection Engineering
 
-Eight documented exercises include the rule design, relevant telemetry, positive/negative testing where performed, and practical limitations.
+Nine documented exercises include the rule design, relevant telemetry, positive/negative testing where performed, and practical limitations.
 
 | ID | Focus | Documentation |
 |---|---|---|
@@ -90,8 +101,11 @@ Eight documented exercises include the rule design, relevant telemetry, positive
 | D006 | Registry Run key persistence | [Report](/detections/D006-registry-persistence.md) |
 | D007 | PowerShell network connection behavior | [Report](/detections/D007-powershell-network-connection.md) |
 | D008 | SMB bulk document access (Wazuh rules `100170` / `100171`) | [Report](/detections/D008-smb-bulk-document-access.md) |
+| D009 | Untrusted access to Wazuh through FortiGate (rules `100180` / `100181` / `100182`) | [Report](/detections/D009-untrusted-access-to-wazuh.md) |
 
 **D008 example:** After collecting Windows Event **5145**, the lab validated a rule correlation for repeated document access requests. A controlled two-file test did not trigger the bulk rule; a ten-file test produced a Level 8 alert from `100171`. An access-check event alone does **not** establish a completed file transfer.
+
+**D009 example:** FortiGate traffic logs are forwarded into Wazuh and decoded with `fortigate-firewall-v5`. Single denied attempts to the Wazuh server are retained as a non-alerting base match, three denied attempts from the same untrusted source within 60 seconds generate a Level 8 correlation alert (`100182`), and a separate Level 12 rule (`100181`) covers accepted traffic from outside the trusted SOC subnet. The accepted-access rule was validated synthetically with `wazuh-logtest`; the repeated-deny rule was validated live end to end.
 
 ## Incident Investigations
 
@@ -128,7 +142,8 @@ Dashboard counts depend on the selected time range and retention. An alert count
 ## Skills Demonstrated
 
 - Windows security auditing and Sysmon-based process correlation
-- Wazuh deployment, agent configuration, alert analysis, and rule validation
+- FortiGate segmentation, firewall policy validation, interface hardening, and syslog integration
+- Wazuh deployment, agent configuration, alert analysis, correlation tuning, and rule validation
 - Positive/negative detection testing and documenting coverage gaps
 - Evidence-based SOC investigation, timeline reconstruction, and recovery verification
 - MITRE ATT&CK technique mapping
